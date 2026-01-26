@@ -5,7 +5,7 @@ config.automatically_reload_config = true
 config.font_size = 11.5
 config.use_ime = true
 config.window_background_opacity = 0.7
-config.default_prog = { "C:\\Program Files (x86)\\PowerShell\\7\\pwsh.exe" }
+config.default_prog = { "C:\\Program Files\\PowerShell\\7\\pwsh.exe" }
 config.default_cwd = wezterm.home_dir .. "\\Project"
 
 ----------------------------------------------------
