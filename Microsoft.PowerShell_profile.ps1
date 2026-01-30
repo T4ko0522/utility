@@ -76,7 +76,31 @@ function Prompt {
 }
 
 # ----------------------------------------------------------------------------
+# https://github.com/antfu-collective/ni とNew-Itemの競合を無効化
+# ----------------------------------------------------------------------------
+if (-not (Test-Path $profile)) {
+    New-Item -ItemType File -Path (Split-Path $profile) -Force -Name (Split-Path $profile -Leaf)
+}
+
+$profileEntry = 'Remove-Item Alias:ni -Force -ErrorAction Ignore'
+$profileContent = Get-Content $profile
+if ($profileContent -notcontains $profileEntry) {
+    ("`n" + $profileEntry) | Out-File $profile -Append -Force -Encoding UTF8
+}
+
+
+# ----------------------------------------------------------------------------
 # カスタムエイリアス
 # ----------------------------------------------------------------------------
 # PowerShellでcmdのようにwhereを実行するとWhere-Objectとして実行されるので、where.exeをエイリアス化
 Set-Alias wh where.exe
+
+# %USERNAME%/Projectに移動するエイリアス
+function cdp {
+    Set-Location "$env:USERPROFILE\Project"
+}
+
+# %USERNAME%/Project/github.com/T4ko0522に移動するエイリアス
+function cdtako {
+    Set-Location "$env:USERPROFILE\Project\github.com\T4ko0522"
+}
