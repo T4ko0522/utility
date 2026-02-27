@@ -1,0 +1,35 @@
+# AI Coding Rules
+
+- Respond in Japanese.
+- Use sub-agents whenever possible.
+
+## Git Commit Message Format
+
+Required: use Conventional Commits + gitmoji.
+
+Format:
+<type>: <emoji> <description>
+
+[optional body]
+
+Type and emoji mapping:
+- feat: ✨
+- fix: 🐛
+- docs: 📝
+- style: 💄
+- refactor: ♻️
+- perf: ⚡️
+- test: ✅
+- build: 👷
+- ci: 🎡
+- chore: 🔧
+
+Examples:
+- feat: ✨ add gitleaks secret scanning
+- fix: 🐛 resolve rumdl warning
+- ci: 🎡 bump actions/checkout to v6.0.1
+
+## Text Processing
+
+- MUST: use `perl` instead of `sed` or `awk` for text processing.
+- MUST: do not use `cat` to read files.

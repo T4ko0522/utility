@@ -1,0 +1,75 @@
+.bundle
+.config/local/
+
+# Vim
+Session.vim
+.vim/bundle/
+.vimrc_sample
+.vim/ftdetect/Dockerfile.vim
+.vim/syntax/Dockerfile.vim
+.vim/snippets/
+.luarc.json
+
+# dpl
+.config/dpl/
+
+# czg cz-git
+.config/.czrc
+
+# sops-nix (secret keys and decrypted files)
+.config/sops/age/keys.txt
+.config/secrets/
+
+*.zwc
+
+# nvm
+.config/nvm/
+# npm
+.config/configstore/update-notifier-npm.json
+
+# lsp
+.config/coc/
+
+# copilot
+.config/github-copilot/hosts.json
+.config/github-copilot/apps.json
+
+# lazygit
+.config/lazygit/state.yml
+
+# colima
+.config/colima/*
+
+# lazydocker
+.config/lazydocker/*
+
+# octo.nvim
+(rite)
+
+# Vagrant
+.vagrant
+
+# serena
+.serena
+.config/nix/result
+
+# claude
+.config/claude/.claude.json
+.config/claude/.claude.json.backup*
+.config/claude/cache/
+.config/claude/debug/
+.config/claude/plugins/
+.config/claude/projects/
+.config/claude/statsig/
+.config/claude/tasks/
+.config/claude/todos/
+.config/claude/file-history/
+.config/claude/history.jsonl
+.config/claude/shell-snapshots/
+.config/claude/plans/
+.config/claude/stats-cache.json
+.config/claude/paste-cache/
+.config/claude/image-cache/
+.config/claude/telemetry/
+.config/claude/backups/
+plans/
