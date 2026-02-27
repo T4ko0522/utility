@@ -18,7 +18,7 @@ config.font = wezterm.font_with_fallback({
 })
 
 -- 背景の透過度
-config.window_background_opacity = 0.7
+config.window_background_opacity = 0.5
 
 -- QuickSelect patterns (SUPER + Space)
 config.quick_select_patterns = {
