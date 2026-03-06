@@ -2,9 +2,6 @@
 # PowerShell プロファイル
 # ============================================================================
 
-# プロファイル読み込み時間のメッセージを非表示にする
-$PSDefaultParameterValues['Out-Default:InformationAction'] = 'SilentlyContinue'
-
 # ----------------------------------------------------------------------------
 # カスタムエイリアス・関数
 # install: https://github.com/x-motemen/ghq
@@ -22,6 +19,14 @@ function ghcd() {
 
 Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
+
+# ----------------------------------------------------------------------------
+# Starship プロンプト
+# install: winget install Starship.Starship
+# ----------------------------------------------------------------------------
+if (Get-Command starship -ErrorAction SilentlyContinue) {
+    Invoke-Expression (&starship init powershell)
+}
 
 # ----------------------------------------------------------------------------
 # モジュールのインポート
@@ -46,36 +51,6 @@ function Get-GitBranch {
 }
 
 # ----------------------------------------------------------------------------
-# カスタムプロンプト関数
-# ----------------------------------------------------------------------------
-
-function Prompt {
-    $currentPath = Get-Location
-    $Host.UI.RawUI.WindowTitle = Split-Path -Leaf $currentPath
-
-    Write-Host ""
-
-    # 現在のパスを表示
-    Write-Host "[" -NoNewline -ForegroundColor White
-    Write-Host $currentPath -NoNewline -ForegroundColor DarkYellow
-    Write-Host "]" -NoNewline -ForegroundColor White
-
-    # Gitブランチを表示（存在する場合）
-    $branch = Get-GitBranch
-    if ($branch) {
-        Write-Host " [" -NoNewline -ForegroundColor White
-        Write-Host $branch -NoNewline -ForegroundColor DarkCyan
-        Write-Host "]" -NoNewline -ForegroundColor White
-    }
-
-    # 現在の日時を表示
-    $now = Get-Date -Format "yyyy/MM/dd HH:mm"
-    Write-Host "`n$now" -ForegroundColor White
-
-    return " > "
-}
-
-# ----------------------------------------------------------------------------
 # https://github.com/antfu-collective/ni とNew-Itemの競合を無効化
 # ----------------------------------------------------------------------------
 if (-not (Test-Path $profile)) {
@@ -92,7 +67,6 @@ if ($profileContent -notcontains $profileEntry) {
 # ----------------------------------------------------------------------------
 # カスタムエイリアス
 # ----------------------------------------------------------------------------
-# PowerShellでcmdのようにwhereを実行するとWhere-Objectとして実行されるので、where.exeをエイリアス化
 Set-Alias wh where.exe
 
 # %USERNAME%/Projectに移動するエイリアス
@@ -105,9 +79,3 @@ function cdtako {
     Set-Location "$env:USERPROFILE\Project\github.com\T4ko0522"
 }
 Remove-Item Alias:ni -Force -ErrorAction Ignore
-
-# dotfiles .bin を PATH に追加
-$dotfilesBin = Join-Path $env:USERPROFILE "Project\github.com\T4ko0522\dotfiles-mac\.bin"
-if ((Test-Path -LiteralPath $dotfilesBin) -and (-not (($env:PATH -split ';') -contains $dotfilesBin))) {
-    $env:PATH = "$env:PATH;$dotfilesBin"
-}
