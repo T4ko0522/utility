@@ -4,9 +4,9 @@ local module = {}
 local appearance = {
   color_scheme = "Solarized Dark Higher Contrast",
 
-  -- window title
-  -- タイトルバーを非表示
-  window_decorations = "RESIZE", -- NONE, TITLE, TITLE | RESIZE, RESIZE, INTEGRATED_BUTTONS
+  -- タイトルバーは使わず、最小化・最大化・閉じるをタブバー内に表示（透明のまま）
+  window_decorations = "INTEGRATED_BUTTONS | RESIZE",
+  integrated_title_buttons = { "Hide", "Maximize", "Close" }, -- 最小化, 最大化, 閉じる
   window_close_confirmation = "NeverPrompt", -- AlwaysPrompt or NeverPrompt
 
   -- Pane
@@ -26,19 +26,19 @@ local appearance = {
   show_close_tab_button_in_tabs = true, -- Can only be used in nightly
   tab_max_width = 30,
   use_fancy_tab_bar = true,
-  -- use_fancy_tab_bar = trueの場合のタブバー透過設定
+  -- タブバー（上部）を透過
   window_frame = {
-    inactive_titlebar_bg = "#1a1a2e",
-    active_titlebar_bg = "#1a1a2e",
+    inactive_titlebar_bg = "none",
+    active_titlebar_bg = "none",
   },
   -- Hide borders between tabs
   colors = {
     -- 青みがかった背景色（アクティブPaneで青く見える）
     background = "#1a1a2e",
-    -- use_fancy_tab_bar = falseの場合のタブバー透過設定
+    -- タブバー背景を透過
     tab_bar = {
-      background = "#1a1a2e",
-      inactive_tab_edge = "#1a1a2e",
+      background = "none",
+      inactive_tab_edge = "none",
     },
     -- カーソルとコピーモード選択色（WezTermデフォルト）
     cursor_bg = "#80EBDF",

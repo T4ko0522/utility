@@ -155,9 +155,9 @@ function module.apply_to_config(config)
       ssh_host_cache[pane_id] = nil
     end
 
-    -- タブの色
+    -- タブの色（edge を透過でタブバー上部が透ける）
     local background, foreground = get_tab_colors(tab.is_active, is_ssh)
-    local edge_background = "#1a1a2e"
+    local edge_background = "none"
     local edge_foreground = background
 
     -- タイトルテキスト
