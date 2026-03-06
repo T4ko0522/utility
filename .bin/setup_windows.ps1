@@ -66,20 +66,17 @@ foreach ($rel in $targets) {
   Write-Host "Linked: $dst -> $src"
 }
 
-# PowerShell profile is loaded from Documents/PowerShell, not ~/.config/powershell.
+# PowerShell profile: リポジトリのプロファイルをクリーンして $PROFILE のコピー先に書き出す（リンクしない）。
 $profileSrc = Join-Path $repo ".config/powershell/Microsoft.PowerShell_profile.ps1"
+$documentsDir = [Environment]::GetFolderPath("MyDocuments")
+$profileDst = Join-Path $documentsDir "PowerShell\\Microsoft.PowerShell_profile.ps1"
 if (Test-Path -LiteralPath $profileSrc) {
-  $documentsDir = [Environment]::GetFolderPath("MyDocuments")
-  $profileDst = Join-Path $documentsDir "PowerShell\\Microsoft.PowerShell_profile.ps1"
   $profileParent = Split-Path -Parent $profileDst
   if (-not (Test-Path -LiteralPath $profileParent)) {
     New-Item -ItemType Directory -Path $profileParent -Force | Out-Null
   }
-
-  if (Remove-ExistingPath -path $profileDst) {
-    New-Link -src $profileSrc -dst $profileDst -isDir $false
-    Write-Host "Linked profile: $profileDst -> $profileSrc"
-  }
+  Remove-ExistingPath -path $profileDst | Out-Null
+  & (Join-Path $binDir "optim_pwsh_profile.ps1") -SourcePath $profileSrc -OutputPath $profileDst
 } else {
   Write-Host "Skip missing PowerShell profile source: $profileSrc"
 }
