@@ -15,8 +15,7 @@ $targets = @(
   ".config/vim",
   ".config/vde",
   ".config/wezterm",
-  ".config/claude",
-  ".config/yazi"
+  ".config/claude"
 )
 
 function Remove-ExistingPath($path) {
@@ -64,6 +63,24 @@ foreach ($rel in $targets) {
   $srcItem = Get-Item $src -Force
   New-Link -src $src -dst $dst -isDir $srcItem.PSIsContainer
   Write-Host "Linked: $dst -> $src"
+}
+
+# yazi: AppData\Roaming\yazi\config にリンク（yazi の既定の設定場所）
+$yaziSrc = Join-Path $repo ".config/yazi"
+$roamingDir = [Environment]::GetFolderPath("ApplicationData")
+$yaziDst = Join-Path $roamingDir "yazi\config"
+if (Test-Path $yaziSrc) {
+  $yaziDstParent = Split-Path -Parent $yaziDst
+  if (-not (Test-Path $yaziDstParent)) {
+    New-Item -ItemType Directory -Path $yaziDstParent -Force | Out-Null
+  }
+  if (Remove-ExistingPath -path $yaziDst) {
+    $yaziSrcItem = Get-Item $yaziSrc -Force
+    New-Link -src $yaziSrc -dst $yaziDst -isDir $yaziSrcItem.PSIsContainer
+    Write-Host "Linked: $yaziDst -> $yaziSrc"
+  }
+} else {
+  Write-Host "Skip missing yazi source: $yaziSrc"
 }
 
 # PowerShell profile: リポジトリのプロファイルをクリーンして $PROFILE のコピー先に書き出す（リンクしない）。
