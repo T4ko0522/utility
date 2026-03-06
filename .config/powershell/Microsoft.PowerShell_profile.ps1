@@ -3,32 +3,6 @@
 # ============================================================================
 
 # ----------------------------------------------------------------------------
-# カスタムエイリアス・関数
-# install: https://github.com/x-motemen/ghq
-# install: https://github.com/peco/peco
-# ----------------------------------------------------------------------------
-
-# ghqとpecoを使用してリポジトリに移動する関数
-function ghcd() {
-    Set-Location "$(ghq root)/$(ghq list | peco)"
-}
-
-# ----------------------------------------------------------------------------
-# PSReadLine設定（入力補完・予測入力）
-# ----------------------------------------------------------------------------
-
-Set-PSReadLineOption -PredictionViewStyle ListView
-Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
-
-# ----------------------------------------------------------------------------
-# Starship プロンプト
-# install: winget install Starship.Starship
-# ----------------------------------------------------------------------------
-if (Get-Command starship -ErrorAction SilentlyContinue) {
-    Invoke-Expression (&starship init powershell)
-}
-
-# ----------------------------------------------------------------------------
 # モジュールのインポート
 # install: https://github.com/devblackops/Terminal-Icons
 # ----------------------------------------------------------------------------
@@ -36,38 +10,54 @@ if (Get-Command starship -ErrorAction SilentlyContinue) {
 Import-Module Terminal-Icons
 
 # ----------------------------------------------------------------------------
-# Git関連の関数
-# ----------------------------------------------------------------------------
-
-# 現在のGitブランチ名を取得する関数
-function Get-GitBranch {
-    try {
-        $branch = git symbolic-ref --short HEAD 2>$null
-        return $branch
-    }
-    catch {
-        return $null
-    }
-}
-
-# ----------------------------------------------------------------------------
 # https://github.com/antfu-collective/ni とNew-Itemの競合を無効化
 # ----------------------------------------------------------------------------
-if (-not (Test-Path $profile)) {
-    New-Item -ItemType File -Path (Split-Path $profile) -Force -Name (Split-Path $profile -Leaf)
-}
-
-$profileEntry = 'Remove-Item Alias:ni -Force -ErrorAction Ignore'
-$profileContent = Get-Content $profile
-if ($profileContent -notcontains $profileEntry) {
-    ("`n" + $profileEntry) | Out-File $profile -Append -Force -Encoding UTF8
-}
-
+Remove-Item Alias:ni -Force -ErrorAction Ignore
 
 # ----------------------------------------------------------------------------
-# カスタムエイリアス
+# PSReadLine設定（入力補完・予測入力）
+# ----------------------------------------------------------------------------
+
+Set-PSReadLineOption -PredictionViewStyle ListView
+Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
+Set-PSReadLineOption -MaximumHistoryCount 16384
+Set-PSReadLineOption -BellStyle None
+Set-PSReadLineOption -Colors @{
+    Command              = "Green"
+    Error                = "Red"
+    InlinePrediction      = "Magenta"
+    ListPrediction        = "Magenta"
+    ListPredictionSelected = "#e066ff"
+}
+
+# ----------------------------------------------------------------------------
+# Starship プロンプト初期化
+# install: winget install Starship.Starship
+# ----------------------------------------------------------------------------
+Invoke-Expression (&starship init powershell)
+$script:__StarshipPrompt = (Get-Item function:Prompt).ScriptBlock
+
+# 長時間コマンド完了時に WezTerm で通知音（BEL を送る）
+$script:__WeztermBellLastPrompt = $null
+function Prompt {
+    $now = Get-Date
+    if ($null -ne $script:__WeztermBellLastPrompt) {
+        $sec = ($now - $script:__WeztermBellLastPrompt).TotalSeconds
+        if ($sec -ge 5) { Write-Host "`a" -NoNewline }
+    }
+    $script:__WeztermBellLastPrompt = $now
+    return (& $script:__StarshipPrompt)
+}
+
+# ----------------------------------------------------------------------------
+# カスタムエイリアス・関数
 # ----------------------------------------------------------------------------
 Set-Alias wh where.exe
+
+# 上位ディレクトリへ一気に移動（... = 2階上, .... = 3階上, ..... = 4階上）
+function ... { Set-Location ../.. }
+function .... { Set-Location ../../.. }
+function ..... { Set-Location ../../../.. }
 
 # %USERNAME%/Projectに移動するエイリアス
 function cdp {
@@ -78,4 +68,10 @@ function cdp {
 function cdtako {
     Set-Location "$env:USERPROFILE\Project\github.com\T4ko0522"
 }
-Remove-Item Alias:ni -Force -ErrorAction Ignore
+
+# ghqとpecoを使用してリポジトリに移動する関数
+# install: https://github.com/x-motemen/ghq
+# install: https://github.com/peco/peco
+function ghcd() {
+    Set-Location "$(ghq root)/$(ghq list | peco)"
+}
