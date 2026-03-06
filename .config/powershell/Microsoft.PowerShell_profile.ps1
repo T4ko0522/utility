@@ -54,7 +54,6 @@ function Prompt {
 # ----------------------------------------------------------------------------
 Set-Alias wh where.exe
 Set-Alias vi nvim
-Set-Alias yz yazi
 Set-Alias open explorer
 
 # 上位ディレクトリへ一気に移動（... = 2階上, .... = 3階上, ..... = 4階上）
@@ -77,4 +76,15 @@ function cdtako {
 # install: https://github.com/peco/peco
 function ghcd() {
     Set-Location "$(ghq root)/$(ghq list | peco)"
+}
+
+# yaziで移動したディレクトリにシェルもcdするラッパー関数
+function yz {
+    $tmp = [System.IO.Path]::GetTempFileName()
+    yazi $args --cwd-file="$tmp"
+    $cwd = Get-Content -Path $tmp -ErrorAction SilentlyContinue
+    if ($cwd -and $cwd -ne $PWD.Path) {
+        Set-Location -Path $cwd
+    }
+    Remove-Item -Path $tmp -ErrorAction SilentlyContinue
 }
