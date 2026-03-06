@@ -6,7 +6,7 @@ local module = {}
 -- =============================================================================
 
 local WORKSPACE_COLORS = {
-  default = "#da70d6",
+  default = "#afeeee",
   copy_mode = "#ffd700",
   setting_mode = "#39FF14",
 }
