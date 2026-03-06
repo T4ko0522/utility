@@ -20,6 +20,13 @@ config.font = wezterm.font_with_fallback({
 -- 背景の透過度
 config.window_background_opacity = 0.65
 
+-- タスク完了時の通知
+config.audible_bell = "SystemBeep"
+config.visual_bell = {
+  fade_in_duration_ms = 0,
+  fade_out_duration_ms = 0,
+}
+
 -- QuickSelect patterns (SUPER + Space)
 config.quick_select_patterns = {
   -- AWS ARN
