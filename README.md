@@ -1,12 +1,13 @@
 # dotfiles
 
 ## Description
+
 [@mozumasu](https://github.com/mozumasu/)さんのdotfilesを参考につくられたWindows用のdotfilesです。
 
 ## Dependency
 
 | アプリ | 用途 | インストール |
-|--------|------|--------------|
+| ------ | ---- | ------------ |
 | **PowerShell 7** | シェル・セットアップ実行 | [PowerShell](https://github.com/PowerShell/PowerShell#get-powershell) |
 | **Git** | リポジトリ clone・設定 | [git-scm.com](https://git-scm.com/) |
 | **WezTerm** | ターミナル | [wezterm.com](https://wezterm.com/#Installation) |
