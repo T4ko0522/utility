@@ -10,6 +10,7 @@
   df = "!git hist | fzf | awk '{print $2}' | xargs -I {} git diff {}^ {}"
   ps = "!git push origin $(git rev-parse --abbrev-ref HEAD)"
   pl = "!git pull origin $(git rev-parse --abbrev-ref HEAD)"
+  init = "!f(){ \"$(git --exec-path)/git-init\" \"$@\" && cp \"$HOME/.git_template/git-secrets/.cursorrules\" .cursorrules 2>/dev/null || true; }; f"
 [push]
 	autoSetupRemote = true
 [filter "lfs"]
@@ -30,7 +31,7 @@
 [http]
 	postBuffer = 524288000
 [ghq]
-	root = ~/src
+	root = ~/Project
 [user]
 	email = tako.renraku1@gmail.com
 	name = T4ko0522
