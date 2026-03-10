@@ -180,9 +180,9 @@ function module.apply_to_config(config)
     -- ズームインジケーター
     local zoom_indicator = has_zoomed_pane(tab.panes) and (ICONS.zoom .. " ") or ""
 
-    -- 半円（アクティブタブのみ）
-    local left_circle = tab.is_active and DECORATIONS.left_circle or ""
-    local right_circle = tab.is_active and DECORATIONS.right_circle or ""
+    -- -- 半円
+    local left_circle = DECORATIONS.left_circle
+    local right_circle = DECORATIONS.right_circle
 
     -- タイトルの整形
     local title = " " .. wezterm.truncate_right(title_text, max_width)
