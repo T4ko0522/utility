@@ -3,11 +3,7 @@ local act = wezterm.action
 local module = {}
 
 local function shell_command_args(command)
-  if wezterm.target_triple:find("windows") then
-    return { "pwsh", "-NoLogo", "-Command", command }
-  end
-  local shell = os.getenv("SHELL") or "sh"
-  return { shell, "-lc", command }
+  return { "pwsh", "-NoLogo", "-Command", command }
 end
 
 -- NOTE: Lua診断で`utf8`がundefined globalとして警告されますが、
@@ -30,10 +26,10 @@ local function get_project_name(path)
   if not path or path == "" then
     return "unknown"
   end
-  -- 末尾のスラッシュを削除
-  path = path:gsub("/$", "")
+  -- 末尾のスラッシュ・バックスラッシュを削除
+  path = path:gsub("[/\\]+$", "")
   -- 最後のディレクトリ名を取得
-  local project_name = path:match("([^/]+)$")
+  local project_name = path:match("([^/\\]+)$")
   return project_name or "unknown"
 end
 
@@ -205,7 +201,6 @@ local function export_sessions_to_file(sessions, filepath)
     return false
   end
 
-  -- 最後に改行を追加（Bashのreadで最後の行も読み込めるようにする）
   local content = table.concat(lines, "\n") .. "\n"
   file:write(content)
   file:close()
@@ -396,11 +391,11 @@ local function create_fzf_session_selector()
     end
 
     -- 一時ファイルのパス
-    local temp_dir = os.getenv("TMPDIR") or "/tmp"
-    local sessions_file = temp_dir .. "/wezterm_claude_sessions_" .. os.time() .. ".jsonl"
-    local formatted_file = temp_dir .. "/wezterm_fzf_input_" .. os.time() .. ".txt"
-    local result_file = temp_dir .. "/wezterm_claude_result_" .. os.time() .. ".txt"
-    local port_file = temp_dir .. "/wezterm_claude_port_" .. os.time() .. ".txt"
+    local temp_dir = os.getenv("TEMP") or os.getenv("TMP") or "C:\\Temp"
+    local sessions_file = temp_dir .. "\\wezterm_claude_sessions_" .. os.time() .. ".jsonl"
+    local formatted_file = temp_dir .. "\\wezterm_fzf_input_" .. os.time() .. ".txt"
+    local result_file = temp_dir .. "\\wezterm_claude_result_" .. os.time() .. ".txt"
+    local port_file = temp_dir .. "\\wezterm_claude_port_" .. os.time() .. ".txt"
 
     -- データをエクスポート
     if not export_sessions_to_file(sessions, sessions_file) then
@@ -415,38 +410,35 @@ local function create_fzf_session_selector()
     end
 
     -- スクリプトのパス
-    local config_dir = wezterm.config_dir or (os.getenv("HOME") .. "/.config/wezterm")
-    local preview_script = config_dir .. "/scripts/preview_claude_session.lua"
-
-    local path_prefix = "/usr/local/bin"
+    local config_dir = wezterm.config_dir or (os.getenv("USERPROFILE") .. "\\.config\\wezterm")
+    local preview_script = config_dir .. "\\scripts\\preview_claude_session.lua"
 
     -- fzfカラー設定
     local fzf_colors =
       "--color=fg:255,bg:-1,hl:117,fg+:255,bg+:237,hl+:141,info:240,prompt:141,pointer:141,marker:141,spinner:141,header:240"
 
-    -- fzfコマンド（PATHを明示的に設定）
-    -- PORTをランダム生成してport_fileに書き出し、--listen で起動
+    -- fzfコマンド（PowerShell用）
     local command = string.format(
-      [[PORT=$((RANDOM + 10000)); echo "$PORT" > "%s"; fzf \
-        --listen "$PORT" \
-        --ansi \
-        --height=50%% \
-        --reverse \
-        --border=rounded \
-        --prompt="🤖 Claude Code Sessions > " \
-        --preview='export PATH=%s:$PATH; lua "%s" "%s" {}' \
-        --preview-window=right:60%%:wrap \
-        --delimiter='|' \
-        --with-nth=1 \
-        %s \
-        < "%s" \
-        > "%s"; exit]],
+      [[$port = Get-Random -Minimum 10000 -Maximum 60000; ]] ..
+      [[$port | Out-File -FilePath "%s" -Encoding ascii -NoNewline; ]] ..
+      [[Get-Content "%s" | fzf ]] ..
+        [[--listen $port ]] ..
+        [[--ansi ]] ..
+        [[--height=50%%%% ]] ..
+        [[--reverse ]] ..
+        [[--border=rounded ]] ..
+        [["--prompt=🤖 Claude Code Sessions > " ]] ..
+        [["--preview=lua \`"%s\`" \`"%s\`" {}" ]] ..
+        [[--preview-window=right:60%%:wrap ]] ..
+        [["--delimiter=|" ]] ..
+        [[--with-nth=1 ]] ..
+        [[%s ]] ..
+        [[| Out-File -FilePath "%s" -Encoding ascii -NoNewline]],
       port_file,
-      path_prefix,
+      formatted_file,
       preview_script,
       sessions_file,
       fzf_colors,
-      formatted_file,
       result_file
     )
 
@@ -495,8 +487,9 @@ local function create_fzf_session_selector()
               local port = pf:read("*line")
               pf:close()
               if port and port ~= "" then
+                port = port:gsub("%s+", "")
                 os.execute(string.format(
-                  "curl -s -m 1 'http://localhost:%s' -d 'reload(cat \"%s\")' >/dev/null 2>&1 &",
+                  [[powershell -NoProfile -Command "try { Invoke-WebRequest -Uri 'http://localhost:%s' -Method POST -Body 'reload(Get-Content \"%s\")' -TimeoutSec 1 | Out-Null } catch {}" 2>NUL]],
                   port, formatted_file
                 ))
               end

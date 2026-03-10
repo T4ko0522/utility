@@ -13,6 +13,15 @@ local GREEN = '\x1b[38;5;114m'
 local YELLOW = '\x1b[38;5;214m'
 local RESET = '\x1b[0m'
 
+-- 簡易JSONパーサー（フラットな文字列値のみ対応）
+local function parse_json_line(line)
+  local obj = {}
+  for key, value in line:gmatch('"([^"]+)"%s*:%s*"([^"]*)"') do
+    obj[key] = value
+  end
+  return obj
+end
+
 -- pane_idを抽出
 local pane_id = selected_line:match("|([^|]+)$")
 
@@ -21,26 +30,35 @@ if not pane_id then
   os.exit(1)
 end
 
--- jqでJSONパース
-local jq_cmd = string.format(
-  "grep '\"pane_id\":\"%s\"' '%s' | jq -r '.workspace,.project,.cwd,.content,.tab_title,.status'",
-  pane_id,
-  sessions_file
-)
+-- JSONLファイルを読み込み、pane_idにマッチする行を検索
+local workspace = ""
+local project = ""
+local cwd = ""
+local content = ""
+local tab_title = ""
+local status = "idle"
 
-local handle = io.popen(jq_cmd)
-if not handle then
-  print("Error: Failed to execute jq")
+local file = io.open(sessions_file, "r")
+if not file then
+  print("Error: Failed to open sessions file")
   os.exit(1)
 end
 
-local workspace = handle:read("*line") or ""
-local project = handle:read("*line") or ""
-local cwd = handle:read("*line") or ""
-local content = handle:read("*line") or ""
-local tab_title = handle:read("*line") or ""
-local status = handle:read("*line") or "idle"
-handle:close()
+for line in file:lines() do
+  if line:find('"pane_id"') and line:find(pane_id, 1, true) then
+    local obj = parse_json_line(line)
+    if obj.pane_id == pane_id then
+      workspace = obj.workspace or ""
+      project = obj.project or ""
+      cwd = obj.cwd or ""
+      content = obj.content or ""
+      tab_title = obj.tab_title or ""
+      status = obj.status or "idle"
+      break
+    end
+  end
+end
+file:close()
 
 -- ヘッダー表示
 print(GRAY .. "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" .. RESET)
@@ -79,16 +97,25 @@ print(WHITE .. "Recent Output" .. RESET)
 print(GRAY .. "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" .. RESET)
 print("")
 
--- wezterm cliでペイン出力取得
-local wezterm_cmd = string.format("wezterm cli get-text --pane-id %s 2>/dev/null | tail -n 20", pane_id)
+-- wezterm cliでペイン出力取得（末尾20行をLuaで切り出し）
+local wezterm_cmd = string.format("wezterm cli get-text --pane-id %s 2>NUL", pane_id)
 local wezterm_handle = io.popen(wezterm_cmd)
 if wezterm_handle then
-  local output = wezterm_handle:read("*all")
+  local lines = {}
+  for line in wezterm_handle:lines() do
+    lines[#lines + 1] = line
+  end
   wezterm_handle:close()
 
-  if output and output ~= "" then
-    print(output)
-  else
+  -- 末尾20行を取得
+  local start = math.max(1, #lines - 19)
+  local has_output = false
+  for i = start, #lines do
+    print(lines[i])
+    has_output = true
+  end
+
+  if not has_output then
     print(GRAY .. "(Could not retrieve pane output)" .. RESET)
   end
 else
