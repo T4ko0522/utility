@@ -7,29 +7,40 @@
 
 Required: use Conventional Commits + gitmoji.
 
-Format:
+### Format
+
+```text
 <type>: <emoji> <description>
 
 [optional body]
+```
 
-Type and emoji mapping:
-- feat: ✨
-- fix: 🐛
-- docs: 📝
-- style: 💄
-- refactor: ♻️
-- perf: ⚡️
-- test: ✅
-- build: 👷
-- ci: 🎡
-- chore: 🔧
+### Type and Emoji Mapping
 
-Examples:
-- feat: ✨ add gitleaks secret scanning
-- fix: 🐛 resolve rumdl warning
-- ci: 🎡 bump actions/checkout to v6.0.1
+| Type       | Emoji | Description        |
+| ---------- | ----- | ------------------ |
+| `feat`     | ✨    | New feature        |
+| `fix`      | 🐛    | Bug fix            |
+| `docs`     | 📝    | Documentation      |
+| `style`    | 💄    | Style / formatting |
+| `refactor` | ♻️    | Refactoring        |
+| `perf`     | ⚡️    | Performance        |
+| `test`     | ✅    | Tests              |
+| `build`    | 👷    | Build system       |
+| `ci`       | 🎡    | CI/CD              |
+| `chore`    | 🔧    | Maintenance        |
+| `remove`   | 🔥    | Remove code/files  |
+| `deploy`   | 🚀    | Deploy stuff       |
+
+### Examples
+
+```text
+feat: ✨ add gitleaks secret scanning
+fix: 🐛 resolve rumdl warning
+ci: 🎡 bump actions/checkout to v6.0.1
+```
 
 ## Text Processing
 
-- MUST: use `perl` instead of `sed` or `awk` for text processing.
-- MUST: do not use `cat` to read files.
+- **MUST**: use `perl` instead of `sed` or `awk` for text processing.
+- **MUST**: do not use `cat` to read files.
