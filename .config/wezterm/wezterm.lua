@@ -12,9 +12,8 @@ config.default_cwd = wezterm.home_dir .. "\\Project"
 -- font
 config.font_size = 13.0
 config.font = wezterm.font_with_fallback({
+  "PlemolJP Console NF",
   "Cascadia Mono",
-  "Noto Sans JP",
-  "Segoe UI Emoji",
 })
 
 -- 背景の透過度
