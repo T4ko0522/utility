@@ -9,7 +9,7 @@
 
 # Clarifying Requirements
 
-- If user requests or requirements are unclear, repeatedly use `user_input` to delve deeper and clarify ambiguities.
+- If user requests or requirements are unclear, repeatedly use `request_user_input` to delve deeper and clarify ambiguities.
 
 # Design Principles
 
