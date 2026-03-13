@@ -8,7 +8,7 @@ set -euo pipefail
 input=$(cat)
 
 # Parse fields with jq
-cwd=$(echo "$input" | jq -r '.cwd // ""')
+cwd=$(echo "$input" | jq -r '.cwd // ""' | tr '\\' '/')
 used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // 0')
 cost=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
 model=$(echo "$input" | jq -r '.model.display_name // "Unknown"')
@@ -19,8 +19,14 @@ if git -C "$cwd" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   branch=$(git -C "$cwd" branch --show-current 2>/dev/null || echo "")
 fi
 
-# Shorten home directory in path
-short_cwd="${cwd/#$HOME/~}"
+# Shorten home directory in path (handle Windows path variants)
+win_home=$(cygpath -w "$HOME" 2>/dev/null || echo "")
+short_cwd="$cwd"
+if [ -n "$win_home" ]; then
+  short_cwd="${short_cwd/#$win_home/\~}"
+  short_cwd="${short_cwd/#${win_home//\\//}/\~}"
+fi
+short_cwd="${short_cwd/#$HOME/\~}"
 
 # Color codes
 RESET='\033[0m'
