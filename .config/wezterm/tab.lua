@@ -1,4 +1,5 @@
 local wezterm = require("wezterm")
+local claude_status = require("modules.claude_status")
 local module = {}
 
 -- =============================================================================
@@ -56,9 +57,6 @@ local function is_ssh_process(process_name, cmdline, user_vars)
   return false, nil
 end
 
-local function is_claude_process(process_name, pane_title)
-  return process_name == "claude" or (pane_title and (pane_title:find("^✳") or pane_title:lower():find("claude")))
-end
 
 local function extract_project_name(cwd)
   if not cwd then
@@ -168,12 +166,6 @@ function module.apply_to_config(config)
       title_text = title_cache[pane_id] or "-"
     end
 
-    -- Claude Code のタイトル追加
-    local claude_suffix = ""
-    if is_claude_process(process_name, pane_title) and pane_title ~= "" then
-      claude_suffix = " " .. pane_title
-    end
-
     -- アイコン
     local icon, icon_color = get_icon_and_color(process_name, pane_title, cmdline, cached_cwd, is_ssh, tab.is_active)
 
@@ -185,10 +177,19 @@ function module.apply_to_config(config)
     local right_circle = DECORATIONS.right_circle
 
     -- タイトルの整形
-    local title = " " .. wezterm.truncate_right(title_text, max_width)
-    local claude_title = wezterm.truncate_right(claude_suffix, max_width) .. " "
+    local title = " " .. wezterm.truncate_right(title_text, max_width) .. " "
 
-    return {
+    -- Claude ステータス
+    local claude_status_text = ""
+    local claude_status_color = nil
+    if claude_status.is_claude(process_name, pane_title) then
+      local status = claude_status.get_status(pane_title)
+      local s = claude_status.STATUS[status]
+      claude_status_text = "   " .. s.icon .. " "
+      claude_status_color = s.color
+    end
+
+    local tab_elements = {
       { Background = { Color = edge_background } },
       { Text = " " },
       { Foreground = { Color = edge_foreground } },
@@ -196,17 +197,26 @@ function module.apply_to_config(config)
       { Background = { Color = background } },
       { Foreground = { Color = icon_color } },
       { Text = icon },
-      { Background = { Color = background } },
-      { Foreground = { Color = foreground } },
-      { Text = zoom_indicator },
-      { Attribute = { Intensity = "Bold" } },
-      { Text = title },
-      { Attribute = { Intensity = "Normal" } },
-      { Text = claude_title },
-      { Background = { Color = edge_background } },
-      { Foreground = { Color = edge_foreground } },
-      { Text = right_circle },
     }
+
+    -- Claude ステータスをアイコン直後に挿入
+    if claude_status_color then
+      table.insert(tab_elements, { Foreground = { Color = claude_status_color } })
+      table.insert(tab_elements, { Text = claude_status_text })
+    end
+
+    table.insert(tab_elements, { Background = { Color = background } })
+    table.insert(tab_elements, { Foreground = { Color = foreground } })
+    table.insert(tab_elements, { Text = zoom_indicator })
+    table.insert(tab_elements, { Attribute = { Intensity = "Bold" } })
+    table.insert(tab_elements, { Text = title })
+
+    table.insert(tab_elements, { Attribute = { Intensity = "Normal" } })
+    table.insert(tab_elements, { Background = { Color = edge_background } })
+    table.insert(tab_elements, { Foreground = { Color = edge_foreground } })
+    table.insert(tab_elements, { Text = right_circle })
+
+    return tab_elements
   end)
 end
 
