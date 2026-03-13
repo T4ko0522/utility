@@ -13,6 +13,10 @@
 .config/claude/plugins/
 .config/claude/projects/
 .config/claude/statsig/
+.config/claude/skills/*
+!.config/claude/skills/find-skills/*
+!.config/claude/skills/git-commit/*
+!.config/claude/skills/markdown-session-format/*
 .config/claude/tasks/
 .config/claude/todos/
 .config/claude/file-history/
