@@ -11,6 +11,7 @@ $binDir = Join-Path $repo ".bin"
 $targets = @(
   @{ Src = ".gitconfig";            Dst = ".gitconfig" },
   @{ Src = ".config/claude";        Dst = ".claude" },
+  @{ Src = ".config/codex";         Dst = ".codex" },
   @{ Src = ".config/lazygit";       Dst = ".config/lazygit" },
   @{ Src = ".config/mise";          Dst = ".config/mise" },
   @{ Src = ".config/nvim";          Dst = (Join-Path $localDir "nvim") },
