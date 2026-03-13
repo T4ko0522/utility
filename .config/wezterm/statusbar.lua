@@ -29,7 +29,7 @@ function module.apply_to_config(_)
     window:set_left_status(wezterm.format({
       { Background = { Color = "transparent" } },
       { Foreground = { Color = color } },
-      { Text = "  " .. workspace .. "  " },
+      { Text = "  " .. workspace .. "  " },
     }))
 
     -- カーソル色変更（OSCエスケープシーケンスを使用）
