@@ -1,7 +1,6 @@
 # AI Coding Rules
 
 - Respond in Japanese.
-- Use sub-agents whenever possible.
 
 ## Git Commit Message Format
 
@@ -39,8 +38,3 @@ feat: ✨ add gitleaks secret scanning
 fix: 🐛 resolve rumdl warning
 ci: 🎡 bump actions/checkout to v6.0.1
 ```
-
-## Text Processing
-
-- **MUST**: use `perl` instead of `sed` or `awk` for text processing.
-- **MUST**: do not use `cat` to read files.
