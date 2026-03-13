@@ -2,19 +2,22 @@ $ErrorActionPreference = "Stop"
 
 $repo = Split-Path -Parent $PSScriptRoot
 $homeDir = [Environment]::GetFolderPath("UserProfile")
+$localDir = [Environment]::GetFolderPath("LocalApplicationData")
+$roamingDir = [Environment]::GetFolderPath("ApplicationData")
 $binDir = Join-Path $repo ".bin"
 
+# Src: repo からの相対パス
+# Dst: 相対パス → $homeDir 基準、絶対パス → そのまま使用
 $targets = @(
-  ".gitconfig",
-  ".config/jgit",
-  ".config/lazygit",
-  ".config/mise",
-  ".config/starship.toml",
-  ".config/stylua.toml",
-  ".config/vim",
-  ".config/vde",
-  ".config/wezterm",
-  ".config/claude"
+  @{ Src = ".gitconfig";            Dst = ".gitconfig" },
+  @{ Src = ".config/claude";        Dst = ".claude" },
+  @{ Src = ".config/lazygit";       Dst = ".config/lazygit" },
+  @{ Src = ".config/mise";          Dst = ".config/mise" },
+  @{ Src = ".config/nvim";          Dst = (Join-Path $localDir "nvim") },
+  @{ Src = ".config/vim";           Dst = ".config/vim" },
+  @{ Src = ".config/wezterm";       Dst = ".config/wezterm" },
+  @{ Src = ".config/yazi";          Dst = (Join-Path $roamingDir "yazi\config") },
+  @{ Src = ".config/starship.toml"; Dst = ".config/starship.toml" }
 )
 
 function Remove-ExistingPath($path) {
@@ -42,14 +45,20 @@ function New-Link($src, $dst, $isDir) {
   }
 }
 
-foreach ($rel in $targets) {
-  $src = Join-Path $repo $rel
+foreach ($entry in $targets) {
+  $src = Join-Path $repo $entry.Src
   if (-not (Test-Path $src)) {
     Write-Host "Skip missing source: $src"
     continue
   }
 
-  $dst = Join-Path $homeDir $rel
+  # Dst が絶対パスならそのまま、相対パスなら $homeDir 基準
+  if ([System.IO.Path]::IsPathRooted($entry.Dst)) {
+    $dst = $entry.Dst
+  } else {
+    $dst = Join-Path $homeDir $entry.Dst
+  }
+
   $dstParent = Split-Path -Parent $dst
   if (-not (Test-Path $dstParent)) {
     New-Item -ItemType Directory -Path $dstParent -Force | Out-Null
@@ -62,38 +71,6 @@ foreach ($rel in $targets) {
   $srcItem = Get-Item $src -Force
   New-Link -src $src -dst $dst -isDir $srcItem.PSIsContainer
   Write-Host "Linked: $dst -> $src"
-}
-
-# nvim: AppData\Local\nvim にリンク（Windows の Neovim 既定の設定場所）
-$localDir = [Environment]::GetFolderPath("LocalApplicationData")
-$nvimSrc = Join-Path $repo ".config/nvim"
-$nvimDst = Join-Path $localDir "nvim"
-if (Test-Path $nvimSrc) {
-  if (Remove-ExistingPath -path $nvimDst) {
-    $nvimSrcItem = Get-Item $nvimSrc -Force
-    New-Link -src $nvimSrc -dst $nvimDst -isDir $nvimSrcItem.PSIsContainer
-    Write-Host "Linked: $nvimDst -> $nvimSrc"
-  }
-} else {
-  Write-Host "Skip missing nvim source: $nvimSrc"
-}
-
-# yazi: AppData\Roaming\yazi\config にリンク（yazi の既定の設定場所）
-$yaziSrc = Join-Path $repo ".config/yazi"
-$roamingDir = [Environment]::GetFolderPath("ApplicationData")
-$yaziDst = Join-Path $roamingDir "yazi\config"
-if (Test-Path $yaziSrc) {
-  $yaziDstParent = Split-Path -Parent $yaziDst
-  if (-not (Test-Path $yaziDstParent)) {
-    New-Item -ItemType Directory -Path $yaziDstParent -Force | Out-Null
-  }
-  if (Remove-ExistingPath -path $yaziDst) {
-    $yaziSrcItem = Get-Item $yaziSrc -Force
-    New-Link -src $yaziSrc -dst $yaziDst -isDir $yaziSrcItem.PSIsContainer
-    Write-Host "Linked: $yaziDst -> $yaziSrc"
-  }
-} else {
-  Write-Host "Skip missing yazi source: $yaziSrc"
 }
 
 # PowerShell profile: リポジトリのプロファイルをクリーンして $PROFILE のコピー先に書き出す（リンクしない）。
@@ -146,6 +123,15 @@ if ($pathItems -notcontains $binDir) {
   Write-Host "Added to user PATH: $binDir"
 } else {
   Write-Host "Already in user PATH: $binDir"
+}
+
+# Ensure BurntToast module is available for Claude Code notification hooks.
+if (-not (Get-Module -ListAvailable -Name BurntToast)) {
+  Write-Host "Installing BurntToast module for Claude Code notifications..."
+  Install-Module -Name BurntToast -Scope CurrentUser -Force -SkipPublisherCheck
+  Write-Host "BurntToast module installed."
+} else {
+  Write-Host "BurntToast module already installed."
 }
 
 Write-Host "Windows setup completed."
