@@ -1,3 +1,21 @@
 {
-  "autoUpdatesChannel": "stable"
+  "autoUpdatesChannel": "stable",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "permission_prompt|idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File $USERPROFILE/.claude/claude_notify.ps1",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
 }
