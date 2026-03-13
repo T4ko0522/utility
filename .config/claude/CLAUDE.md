@@ -16,3 +16,10 @@
 - There is no need to implement with minimal changes; prioritize conciseness and correctness of design.
 - Adhere to the YAGNI principle, KISS principle, and DRY principle.
 - Do not implement auxiliary functions or alternative paths for backward compatibility unless explicitly requested by the user.
+
+# Package Manager
+
+- If the project's package manager is known, use it directly (e.g., `pnpm`, `pnpm dlx`).
+- If unknown, use `@antfu/ni` commands:
+  - `ni` (install), `nr` (run), `nlx` (exec), `nu` (upgrade), `nun` (uninstall)
+- Do not use `pnpm create` / `npm create`; set up the project manually.
