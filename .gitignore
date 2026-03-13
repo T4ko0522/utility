@@ -53,6 +53,7 @@
 .config/codex/log/
 .config/codex/memories/
 .config/codex/sessions/
+.config/codex/skills/
 .config/codex/sqlite/
 .config/codex/tmp/
 .config/codex/vendor_imports/skills-curated-cache.json
