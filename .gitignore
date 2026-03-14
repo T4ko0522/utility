@@ -13,6 +13,7 @@
 .config/claude/plugins/
 .config/claude/projects/
 .config/claude/statsig/
+.config/claude/sessions/
 .config/claude/skills/*
 !.config/claude/skills/find-skills/*
 !.config/claude/skills/git-commit/*
@@ -50,6 +51,10 @@
 .config/claude/.credentials.json
 
 # codex
+.config/codex/.sandbox
+.config/codex/.sandbox*
+.config/codex/.codex-global-state.json
+.config/codex/.personality_migration
 .config/codex/log/
 .config/codex/memories/
 .config/codex/sessions/
@@ -62,6 +67,7 @@
 .config/codex/config.toml.bak-*
 .config/codex/history.jsonl
 .config/codex/logs_1.sqlite
+.config/codex/logs_1.sqlite*
 .config/codex/models_cache.json
 .config/codex/sandbox.log
 .config/codex/session_index.jsonl
