@@ -36,7 +36,6 @@
     ../modules/agents/agent-skills.nix
     ../modules/agents/claude.nix
     ../modules/agents/codex.nix
-    ../modules/agents/codex-config.nix
     ../modules/agents/codex-desktop.nix
     ../modules/development/git.nix
     ../modules/terminal/configs.nix

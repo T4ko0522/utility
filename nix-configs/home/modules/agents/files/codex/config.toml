@@ -1,11 +1,8 @@
-model = "gpt-5.6-luna"
-model_reasoning_effort = "xhigh"
+model = "gpt-6-astra"
+model_reasoning_effort = "low"
 service_tier = "default"
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
-
-[desktop]
-"selected-avatar-id" = "custom:reimu"
 
 [tui]
 theme = "monokai-extended-origin"
@@ -18,10 +15,6 @@ status_line = [
   "context-used",
 ]
 
-[tui.model_availability_nux]
-"gpt-5.5" = 4
-"gpt-5.6-sol" = 4
-
 [projects."/home/t4ko/dotfiles"]
 trust_level = "trusted"
 
@@ -32,9 +25,6 @@ trust_level = "trusted"
 trust_level = "trusted"
 
 [projects."/home/t4ko/Project/github.com/T4ko0522/vodai"]
-trust_level = "trusted"
-
-[projects."/home/t4ko/ダウンロード/アーカイブ"]
 trust_level = "trusted"
 
 [projects."/home/t4ko/Project/github.com/t4ko0522/spotify-cli"]
@@ -59,9 +49,6 @@ trust_level = "trusted"
 trust_level = "trusted"
 
 [projects."/home/t4ko/Project/github.com/t4ko0522/cf-edgeNix"]
-trust_level = "trusted"
-
-[projects."/home/t4ko/ダウンロード"]
 trust_level = "trusted"
 
 [projects."/home/t4ko/game"]

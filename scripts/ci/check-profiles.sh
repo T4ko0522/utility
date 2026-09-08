@@ -52,7 +52,7 @@ nix eval "$flake#nixosConfigurations.wsl.config.home-manager.users.t4ko.home.fil
   --raw >/dev/null
 
 codex_seed="$(nix eval "$flake#nixosConfigurations.laptop.config.home-manager.users.t4ko.home.activation.seedCodexConfig.data" --raw)"
-if [[ "$codex_seed" != *'/nix/store/'*'-codex-config.toml'* ]]; then
+if [[ "$codex_seed" != *'/nix/store/'*'-config.toml'* ]]; then
   printf '%s\n' 'Codex seed does not use the Nix store source' >&2
   exit 1
 fi
