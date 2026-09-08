@@ -58,8 +58,8 @@ GitHub Actions は `.github/workflows/ci.yml` から各 workflow を呼び出し
 
 ## Agent Skills
 
-- `Kyure-A/agent-skills-nix` が skills を Home Manager で各 agent target へ配置します。
-- 自作 skill は `nix-configs/home/modules/agents/files/skills/<name>/` にフラットに置きます。外部 skill の source と選択は `agents/agent-skills.nix` で管理します。
+- [`T4ko0522/skills`](https://github.com/T4ko0522/skills) を唯一の直接依存として、選択済み skills と Home Manager module を取り込みます。
+- skill の追加・更新や外部 source の選択は `T4ko0522/skills` 側で管理します。このリポジトリの `agents/agent-skills.nix` は配置先と既存ディレクトリの移行処理だけを設定します。
 
 ## スタイル
 

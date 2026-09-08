@@ -49,20 +49,9 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
-    agent-skills = {
-      url = "github:Kyure-A/agent-skills-nix";
-      inputs.home-manager.follows = "home-manager";
+    personal-skills = {
+      url = "github:T4ko0522/skills";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    mizchi-skills = {
-      url = "github:mizchi/skills/5aaf2d126a04a8b079fd5184eb1860f232afffd3";
-      flake = false;
-    };
-
-    actrun = {
-      url = "github:mizchi/actrun/3ea136d34e7ee071986bbaaad54e40aa496b8488";
-      flake = false;
     };
 
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
@@ -86,8 +75,6 @@
   };
 
   outputs = {
-    actrun,
-    agent-skills,
     nixpkgs,
     home-manager,
     handy,
@@ -102,7 +89,7 @@
     nani-translate-linux,
     spotify-cli,
     codex-desktop-linux,
-    mizchi-skills,
+    personal-skills,
     ...
   }: let
     system = "x86_64-linux";
@@ -117,8 +104,6 @@
 
     mkNixos = import ./nix-configs/lib/mk-nixos.nix {
       inherit
-        actrun
-        agent-skills
         codex-desktop-linux
         home-manager
         handy
@@ -128,7 +113,7 @@
         noctalia
         nixpkgs
         nixvim
-        mizchi-skills
+        personal-skills
         spotify-cli
         system
         vicinae
